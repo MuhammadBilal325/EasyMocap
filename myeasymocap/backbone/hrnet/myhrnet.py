@@ -3,6 +3,7 @@ import numpy as np
 import math
 import cv2
 import torch
+import sys
 from ..basetopdown import BaseTopDownModelCache
 from .hrnet import HRNet
 
@@ -63,9 +64,14 @@ class MyHRNet(BaseTopDownModelCache):
             And place it into {}'''.format(os.path.dirname(ckpt))
             print(text)
             os.makedirs(os.path.dirname(ckpt), exist_ok=True)
-            cmd = 'gdown "{}" -O {}'.format(url, ckpt)
+            # Prefer module invocation so it works even when `gdown` binary is not on PATH.
+            cmd = '{} -m gdown "{}" -O "{}"'.format(sys.executable, url, ckpt)
             print('\n', cmd, '\n')
-            os.system(cmd)
+            ret = os.system(cmd)
+            if ret != 0:
+                cmd = 'gdown "{}" -O "{}"'.format(url, ckpt)
+                print('\n', cmd, '\n')
+                os.system(cmd)
         assert os.path.exists(ckpt), f'{ckpt} not exists'
         checkpoint = torch.load(ckpt, map_location='cpu')
         model.load_state_dict(checkpoint)

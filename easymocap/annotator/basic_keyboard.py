@@ -81,18 +81,22 @@ def get_move(wasd):
 
 def set_personID(i):
     def func(self, param, **kwargs):
+        annots = param.get('annots', {}).get('annots', None)
+        if annots is None:
+            return 0
         active = param['select']['bbox']
-        if active == -1 and active >= len(param['annots']['annots']):
+        if active == -1 or active >= len(annots):
             return 0
         else:
-            param['annots']['annots'][active]['personID'] = i
+            annots[active]['personID'] = i
         return 0
     func.__doc__ = "set the bbox ID to {}".format(i)
     return func
 
 def choose_personID(i):
     def func(self, param, **kwargs):
-        for idata, data in enumerate(param['annots']['annots']):
+        annots = param.get('annots', {}).get('annots', [])
+        for idata, data in enumerate(annots):
             if data['personID'] == i:
                 param['select']['bbox'] = idata
         return 0
@@ -181,6 +185,8 @@ def automatic(self, param):
 
 def set_keyframe(self, param):
     "set/unset the key-frame"
+    if 'annots' not in param or 'isKeyframe' not in param['annots']:
+        return 0
     param['annots']['isKeyframe'] = not param['annots']['isKeyframe']
 
 register_keys = {

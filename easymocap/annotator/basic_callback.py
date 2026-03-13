@@ -54,6 +54,11 @@ def point_callback(event, x, y, flags, param):
     elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
         param['end'] = (x, y)
     elif event == cv2.EVENT_LBUTTONUP:
+        # Some workflows may clear start/end before mouse-up is processed.
+        if param.get('start', None) is None:
+            param['click'] = None
+            param['end'] = None
+            return 1
         if x == param['start'][0] and y == param['start'][1]:
             param['click'] = param['start']
             param['start'] = None
