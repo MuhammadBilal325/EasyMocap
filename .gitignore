@@ -118,3 +118,6 @@ models
 yolov5m.pt
 debug/
 pare-github-data.zip
+data.zip
+SMPL
+SMPL_python_v.1.1.0.zip
